@@ -37,16 +37,13 @@ var ViewModel = function() {
   initialMarks.forEach(function(markItem) {
     self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
     });
-  this.currentmark = ko.observable( this.markList() );
+  this.currentMark = ko.observable( this.markList()[1]);
   // to choose a car when we click on it
   this.chooseThis = function(clicked) {
-    self.currentmark( clicked );  
+    self.currentMark( clicked );  
     };
-  this.incrementCounter = function() {
-        this.clickCount(this.clickCount() + 1);
-    };
-  this.resetCounter = function() {
-        this.clickCount(0); 
+  this.showThis = function(clicked) {
+        console.log(clicked.markPosition())
     };  
 };
 
