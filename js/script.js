@@ -1,3 +1,16 @@
+var mymap = L.map('mapid').setView([51.505, -0.09], 10);
+
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+    maxZoom: 18,
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    id: 'mapbox.satellite'
+}).addTo(mymap);
+
+
+
+
 var initialMarks = [
 {
     name : 'pizza allforno',
@@ -30,6 +43,8 @@ var Mark = function(data) {
 };
 
 
+
+
 var ViewModel = function() {
   var self = this
   this.markList = ko.observableArray([]);
@@ -37,14 +52,23 @@ var ViewModel = function() {
   initialMarks.forEach(function(markItem) {
     self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
     });
-  this.currentMark = ko.observable( this.markList()[1]);
+  this.currentMark = ko.observable( this.markList());
   // to choose a car when we click on it
   this.chooseThis = function(clicked) {
     self.currentMark( clicked );  
     };
   this.showThis = function(clicked) {
         console.log(clicked.markPosition())
-    };  
+
+    //L.marker(this.MarkList.mark).addTo(mymap)
+    //    .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
+    };
+  for (i=0;i<self.markList().length;i++){
+      //console.log('asd',self.markList()[i].markPosition())
+      L.marker(self.markList()[i].markPosition()).addTo(mymap)
+        .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
+  };
+
 };
 
 
