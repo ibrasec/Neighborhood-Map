@@ -1,16 +1,42 @@
-var mymap = L.map('mapid').setView([51.505, -0.09], 10);
+var mymap = L.map('mapid').setView([51.505, -0.09], 15);
+
+// creating markers variable For bulk update of all markers at once
+var markers = new L.LayerGroup().addTo(mymap);
+
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
     maxZoom: 18,
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
         '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
         'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    id: 'mapbox.satellite'
+    id: 'mapbox.streets'
 }).addTo(mymap);
 
 
+// simulate getting Data from foursquare using a call function
+var getData = function() {
+    data_ = [
+{
+    name : 'office allforno',
+    info: 'pizza allfornopizza allfornopizza allfornopizza allforno',
+    image: 'alforno.png',
+    position: [51.502545, -0.073395]
+},{
+    name : 'office tandori',
+    info: 'pizza tandoripizza tandoripizza tandori',
+    image: 'tandori.png',
+    position: [51.499072, -0.100181]
+},{
+    name: 'offiice gamaj',
+    info: 'pizza gamajpizza gamajpizza gamaj',
+    image: 'gamaj.png',
+    position: [51.49608, -0.068759]
+}];
+    return data_
+};
 
 
+// Setting the Original Data, or data before parsing Third party app
 var initialMarks = [
 {
     name : 'pizza allforno',
@@ -36,39 +62,62 @@ var initialMarks = [
 
 
 var Mark = function(data) {
-  this.markInfo = ko.observable(data.info);
-  this.markPosition = ko.observable(data.position);
-  this.markName = ko.observable(data.name);  
-  this.markImage = ko.observable(data.image);  
+    this.markInfo = ko.observable(data.info);
+    this.markPosition = ko.observable(data.position);
+    this.markName = ko.observable(data.name);  
+    this.markImage = ko.observable(data.image);  
 };
 
 
-
-
 var ViewModel = function() {
-  var self = this
-  this.markList = ko.observableArray([]);
+    var self = this
+    this.markList = ko.observableArray([]);
 
-  initialMarks.forEach(function(markItem) {
-    self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
+    initialMarks.forEach(function(markItem) {
+        self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
     });
-  this.currentMark = ko.observable( this.markList());
-  // to choose a car when we click on it
-  this.chooseThis = function(clicked) {
-    self.currentMark( clicked );  
-    };
-  this.showThis = function(clicked) {
-        console.log(clicked.markPosition())
 
-    //L.marker(this.MarkList.mark).addTo(mymap)
-    //    .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-    };
-  for (i=0;i<self.markList().length;i++){
-      //console.log('asd',self.markList()[i].markPosition())
-      L.marker(self.markList()[i].markPosition()).addTo(mymap)
-        .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-  };
+    this.currentMark = ko.observable( this.markList() );
 
+    // to refresh the map when the filter button is refresshed
+    this.filterThis = function(clicked) {
+        markers.clearLayers();
+        self.markList = ko.observableArray([]);
+        getData().forEach(function(markItem) {
+            self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
+        });
+        for (i=0;i<self.markList().length;i++){
+            //console.log('asd',self.markList()[i].markPosition())
+            L.marker(self.markList()[i].markPosition(), { title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
+              .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
+              .addTo(markers);
+        };
+
+    };
+
+    this.showThis = function(clicked) {
+        console.log(clicked.markPosition());
+        L.marker(clicked.markPosition()).on('click',onMarkerClick )
+    };
+
+    // Add Markers to the map
+    for (i=0;i<self.markList().length;i++){
+        //console.log('asd',self.markList()[i].markPosition())
+        L.marker(self.markList()[i].markPosition(), { title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
+          .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
+          .addTo(markers);
+    };
+
+
+    var popup = L.popup();
+
+    function onMapClick(e) {
+        popup
+        .setLatLng(e.latlng)
+        .setContent("You clicked the map at " + e.latlng.toString())
+        .openOn(mymap);
+    }
+    mymap.on('click', onMapClick);
 };
 
 
