@@ -3,7 +3,12 @@ var mymap = L.map('mapid').setView([51.505, -0.09], 15);
 // creating markers variable For bulk update of all markers at once
 var markers = new L.LayerGroup().addTo(mymap);
 
-
+var myIcon = L.icon({
+    iconUrl: 'icon2.png',
+    iconSize: [38, 95],
+    iconAnchor: [225, 225],
+    popupAnchor: [-3, -76]
+});
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
     maxZoom: 18,
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -14,26 +19,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 
 
 // simulate getting Data from foursquare using a call function
-var getData = function() {
-    data_ = [
-{
-    name : 'office allforno',
-    info: 'pizza allfornopizza allfornopizza allfornopizza allforno',
-    image: 'alforno.png',
-    position: [51.502545, -0.073395]
-},{
-    name : 'office tandori',
-    info: 'pizza tandoripizza tandoripizza tandori',
-    image: 'tandori.png',
-    position: [51.499072, -0.100181]
-},{
-    name: 'offiice gamaj',
-    info: 'pizza gamajpizza gamajpizza gamaj',
-    image: 'gamaj.png',
-    position: [51.49608, -0.068759]
-}];
-    return data_
-};
+var getData = getFoursquare;
 
 
 // Setting the Original Data, or data before parsing Third party app
@@ -88,7 +74,7 @@ var ViewModel = function() {
         });
         for (i=0;i<self.markList().length;i++){
             //console.log('asd',self.markList()[i].markPosition())
-            L.marker(self.markList()[i].markPosition(), { title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
+            L.marker(self.markList()[i].markPosition(), {  title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
               .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
               .addTo(markers);
         };
