@@ -2,7 +2,7 @@
 
 function getFoursquare() {
 
-    var searchFor = 'restaurant';
+    var searchFor = $('.form-control')[0].value || 'pizza';
     var clientId = '3JMB4UVFMMT0ZJJ2CAEEE10DD42DWOSZEXQB0GO5214Y3A5A';
     var clientSecret = 'KXFDQJMF5TXUFHPASTL0AHF0BCHY3HIVUT1AC2330MP235C3';
     var result = [];
@@ -20,6 +20,7 @@ function getFoursquare() {
     })        
       .done(function () {
         console.log('inside foursqurae',result)
+        console.log('Done SEATCH FOR',searchFor[0].value)
         return result
         //$("#nytimes-articles").append(items);
     })

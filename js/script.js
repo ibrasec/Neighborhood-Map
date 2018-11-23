@@ -19,7 +19,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 
 
 // simulate getting Data from foursquare using a call function
-var getData = getFoursquare();
+//var getData = getFoursquare();
 
 
 // Setting the Original Data, or data before parsing Third party app
@@ -57,7 +57,7 @@ var Mark = function(data) {
 
 var ViewModel = function() {
     var self = this
-    self.getData = getData
+    self.getData = getFoursquare();
     this.markList = ko.observableArray([]);
 
     initialMarks.forEach(function(markItem) {
@@ -68,7 +68,7 @@ var ViewModel = function() {
 
     // to refresh the map when the filter button is refresshed
     this.filterThis = function(clicked) {
-        console.log('asdasdasd',getData)
+        console.log('asdasdasd',self.getData)
         console.log('following')
         self.getData.forEach(function(markItem) {
             console.log('markItem',markItem)
