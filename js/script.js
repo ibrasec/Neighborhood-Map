@@ -19,7 +19,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 
 
 // simulate getting Data from foursquare using a call function
-var getData = getFoursquare;
+var getData = getFoursquare();
 
 
 // Setting the Original Data, or data before parsing Third party app
@@ -48,15 +48,16 @@ var initialMarks = [
 
 
 var Mark = function(data) {
-    this.markInfo = ko.observable(data.info);
+    //this.markInfo = ko.observable(data.info);
     this.markPosition = ko.observable(data.position);
     this.markName = ko.observable(data.name);  
-    this.markImage = ko.observable(data.image);  
+    //this.markImage = ko.observable(data.image);  
 };
 
 
 var ViewModel = function() {
     var self = this
+    self.getData = getData
     this.markList = ko.observableArray([]);
 
     initialMarks.forEach(function(markItem) {
@@ -67,13 +68,21 @@ var ViewModel = function() {
 
     // to refresh the map when the filter button is refresshed
     this.filterThis = function(clicked) {
+        console.log('asdasdasd',getData)
+        console.log('following')
+        self.getData.forEach(function(markItem) {
+            console.log('markItem',markItem)
+        });
+        console.log('end')
         markers.clearLayers();
         self.markList = ko.observableArray([]);
-        getData().forEach(function(markItem) {
+        self.getData.forEach(function(markItem) {
             self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
+            console.log('inside getData().forEach',self.markList())
         });
         for (i=0;i<self.markList().length;i++){
             //console.log('asd',self.markList()[i].markPosition())
+            console.log('inside for loop',self.markList()[i].markPosition())
             L.marker(self.markList()[i].markPosition(), {  title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
               .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
               .addTo(markers);
