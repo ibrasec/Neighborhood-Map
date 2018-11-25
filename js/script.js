@@ -1,5 +1,4 @@
 var mymap = L.map('mapid').setView([51.505, -0.09], 15);
-
 // creating markers variable For bulk update of all markers at once
 var markers = new L.LayerGroup().addTo(mymap);
 
@@ -9,6 +8,7 @@ var myIcon = L.icon({
     iconAnchor: [225, 225],
     popupAnchor: [-3, -76]
 });
+
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
     maxZoom: 18,
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -20,6 +20,39 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 
 // simulate getting Data from foursquare using a call function
 //var getData = getFoursquare();
+
+
+var getData = [
+{
+    name : 'restaurant allforno',
+    info: 'restaurant allfornopizza allfornopizza allfornopizza allforno',
+    image: 'alforno.png',
+    position: [51.50,-0.085]
+},{
+    name : 'restaurant tandori',
+    info: 'restaurant  tandoripizza tandoripizza tandori',
+    image: 'tandori.png',
+    position: [51.51,-0.0865]
+},{
+    name: 'restaurant  gamaj',
+    info: 'restaurant  gamajpizza gamajpizza gamaj',
+    image: 'gamaj.png',
+    position: [51.50,-0.0876]
+},{
+    name : 'restaurant  janzure',
+    info: 'restaurant  janzurepizza janzurepizza janzure',
+    image: 'janzure.png',
+    position: [51.51,-0.0888]
+}];
+
+
+
+
+
+
+
+
+
 
 
 // Setting the Original Data, or data before parsing Third party app
@@ -57,7 +90,7 @@ var Mark = function(data) {
 
 var ViewModel = function() {
     var self = this
-    self.getData = getFoursquare();
+    //self.getData = getFoursquare();
     this.markList = ko.observableArray([]);
 
     initialMarks.forEach(function(markItem) {
@@ -68,21 +101,19 @@ var ViewModel = function() {
 
     // to refresh the map when the filter button is refresshed
     this.filterThis = function(clicked) {
-        console.log('asdasdasd',self.getData)
-        console.log('following')
-        self.getData.forEach(function(markItem) {
-            console.log('markItem',markItem)
-        });
-        console.log('end')
+        //getData = getFoursquare()
         markers.clearLayers();
         self.markList = ko.observableArray([]);
-        self.getData.forEach(function(markItem) {
-            self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
-            console.log('inside getData().forEach',self.markList())
-        });
+        for (i=0;i<getData.length;i++){
+                self.markList.push(new Mark(getData[i]));
+        }
+        //this.getData().forEach(function(markItem) {
+        //    self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
+        //});
+        console.log('marklist inside filterThis',self.markList())
         for (i=0;i<self.markList().length;i++){
             //console.log('asd',self.markList()[i].markPosition())
-            console.log('inside for loop',self.markList()[i].markPosition())
+
             L.marker(self.markList()[i].markPosition(), {  title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
               .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
               .addTo(markers);
@@ -91,13 +122,13 @@ var ViewModel = function() {
     };
 
     this.showThis = function(clicked) {
-        console.log(clicked.markPosition());
-        L.marker(clicked.markPosition()).on('click',onMarkerClick )
+        mymap.setView(clicked.markPosition(),15);
     };
 
     // Add Markers to the map
     for (i=0;i<self.markList().length;i++){
         //console.log('asd',self.markList()[i].markPosition())
+
         L.marker(self.markList()[i].markPosition(), { title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
           .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
           .addTo(markers);
