@@ -20,7 +20,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 
 // simulate getting Data from foursquare using a call function
 //var getData = getFoursquare();
-
+var gotData=[];
 
 var getData = [
 {
@@ -44,13 +44,6 @@ var getData = [
     image: 'janzure.png',
     position: [51.51,-0.0888]
 }];
-
-
-
-
-
-
-
 
 
 
@@ -92,7 +85,7 @@ var ViewModel = function() {
     var self = this
     //self.getData = getFoursquare();
     this.markList = ko.observableArray([]);
-
+    this.go = ko.observableArray([]);
     initialMarks.forEach(function(markItem) {
         self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
     });
@@ -101,28 +94,43 @@ var ViewModel = function() {
 
     // to refresh the map when the filter button is refresshed
     this.filterThis = function(clicked) {
-        //getData = getFoursquare()
+        ajax().done(function(result) {
+        console.log('result',result)
+        result_items = result.response.groups[0].items
+        result_length =   result.response.groups[0].items.length      
+        console.log('inside filterThis',result_items, result_length)
         markers.clearLayers();
         self.markList = ko.observableArray([]);
-        for (i=0;i<getData.length;i++){
-                self.markList.push(new Mark(getData[i]));
-        }
-        //this.getData().forEach(function(markItem) {
-        //    self.markList.push(new Mark(markItem));    // it has to be the ViewModel that is why self not this
-        //});
-        console.log('marklist inside filterThis',self.markList())
+        for(i=0;i<result_length;i++){
+                itemname = result_items[i].venue.name
+                itemlatlng = [result_items[i].venue.location.lat,result_items[i].venue.location.lng]
+                thisdata = {name:itemname,position:itemlatlng}
+                self.markList.push(new Mark(thisdata));
+        };
         for (i=0;i<self.markList().length;i++){
-            //console.log('asd',self.markList()[i].markPosition())
-
             L.marker(self.markList()[i].markPosition(), {  title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
               .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
               .addTo(markers);
         };
-
+        }).fail(function() {
+            console.log('error')
+        });
     };
 
     this.showThis = function(clicked) {
+        console.log(markers._layers)
+        var toberemoved = {}
         mymap.setView(clicked.markPosition(),15);
+
+        $.each(markers._layers, function(k,layers){
+            console.log([layers._latlng.lat,layers._latlng.lng],clicked.markPosition() )
+            var a = [layers._latlng.lat,layers._latlng.lng]
+            console.log(clicked.markPosition().toString() == a.toString())
+            if (clicked.markPosition().toString() == a.toString() ) {
+                mymap.remove(layers)
+            }        
+        }); 
+
     };
 
     // Add Markers to the map
