@@ -56,6 +56,11 @@ var initialMarks = [
     image: 'alforno.png',
     position: [51.50,-0.075]
 },{
+    name : 'pizza JUMLA',
+    info: 'pizza JUMLA',
+    image: 'tandori.png',
+    position: [51.51,-0.08]
+},{
     name : 'pizza tandori',
     info: 'pizza tandoripizza tandoripizza tandori',
     image: 'tandori.png',
