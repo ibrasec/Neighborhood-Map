@@ -14,15 +14,15 @@
     <div class="search-section" style="width: 25%; float:inline-start">
         <div class="filter-section">
             <div class="input-group mb-3">
-              <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+              <input type="text" class="form-control" placeholder="what do you to search for?" aria-label="" aria-describedby="basic-addon1">
               <div class="input-group-prepend">
-                <button data-bind="click: filterThis"class="btn btn-outline-secondary" type="button">Filter</button>
+                <button data-bind="click: filterThis" class="btn btn-outline-secondary filter-button" type="button">Filter</button>
               </div>
             </div>
         </div>
         <div class="list-view-section">
-            <ul data-bind="foreach: markList" class="list-group list-group-flush">
-              <li data-bind="click: $root.showThis ,text: markName" class="list-group-item"></li>
+            <ul data-bind=" foreach: currentMark()" class="list-group list-group-flush">
+              <li data-bind="text: markName" class="list-group-item"></li>
             </ul>
         </div>
     </div>

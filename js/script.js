@@ -99,6 +99,7 @@ var ViewModel = function() {
 
     // to refresh the map when the filter button is refresshed
     this.filterThis = function(clicked) {
+        // calling ajax data when the retrieved successfully
         ajax().done(function(result) {
         console.log('result',result)
         result_items = result.response.groups[0].items
@@ -112,6 +113,7 @@ var ViewModel = function() {
                 thisdata = {name:itemname,position:itemlatlng}
                 self.markList.push(new Mark(thisdata));
         };
+        self.currentMark(self.markList)
         for (i=0;i<self.markList().length;i++){
             L.marker(self.markList()[i].markPosition(), {  title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
               .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
@@ -120,6 +122,7 @@ var ViewModel = function() {
         }).fail(function() {
             console.log('error')
         });
+        console.log('selfmarklist',this.markList()[0].markName());
     };
 
     this.showThis = function(clicked) {
