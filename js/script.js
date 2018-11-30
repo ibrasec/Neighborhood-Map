@@ -19,8 +19,6 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 
 
 // simulate getting Data from foursquare using a call function
-//var getData = getFoursquare();
-var gotData=[];
 
 var getData = [
 {
