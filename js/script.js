@@ -118,7 +118,7 @@ var ViewModel = function() {
               .addTo(markers);
         };
         }).fail(function() {
-            console.log('error')
+            alert("Sorry... We are unable to fetch the data due to connectivty issue")
         });
         console.log('selfmarklist',this.markList()[0].markName());
     };
