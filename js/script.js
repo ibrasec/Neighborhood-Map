@@ -3,10 +3,18 @@ var mymap = L.map('mapid').setView([51.505, -0.09], 15);
 var markers = new L.LayerGroup().addTo(mymap);
 
 var myIcon = L.icon({
-    iconUrl: 'icon2.png',
-    iconSize: [38, 95],
-    iconAnchor: [225, 225],
-    popupAnchor: [-3, -76]
+    iconUrl: './img/marker-icon.png',
+    iconSize:     [25, 41], // size of the icon
+    iconAnchor:   [12.5, 41], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-1, -38] // point from which the popup should open relative to the iconAnchor
+});
+
+
+var mySelectedIcon = L.icon({
+    iconUrl: './img/marker-icon-selected.png',
+    iconSize:     [25, 41], // size of the icon
+    iconAnchor:   [12.5, 41], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-1, -38] // point from which the popup should open relative to the iconAnchor
 });
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -113,9 +121,10 @@ var ViewModel = function() {
         };
         self.currentMark(self.markList)
         for (i=0;i<self.markList().length;i++){
-            L.marker(self.markList()[i].markPosition(), {  title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
+            x = L.marker(self.markList()[i].markPosition(), {   icon: myIcon, title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
               .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
               .addTo(markers);
+              x.on('click', onMarkClick);
         };
         }).fail(function() {
             alert("Sorry... We are unable to fetch the data due to connectivty issue")
@@ -124,29 +133,27 @@ var ViewModel = function() {
     };
 
     this.showThis = function(clicked) {
-        console.log(markers._layers)
-        var toberemoved = {}
-        mymap.setView(clicked.markPosition(),15);
-
-        $.each(markers._layers, function(k,layers){
-            console.log([layers._latlng.lat,layers._latlng.lng],clicked.markPosition() )
-            var a = [layers._latlng.lat,layers._latlng.lng]
-            console.log(clicked.markPosition().toString() == a.toString())
-            if (clicked.markPosition().toString() == a.toString() ) {
-                mymap.remove(layers)
-            }        
-        }); 
-
+        console.log('Something has been clicked',clicked)
+        console.log(self.currentMark(clicked))
     };
 
     // Add Markers to the map
     for (i=0;i<self.markList().length;i++){
-        //console.log('asd',self.markList()[i].markPosition())
-
-        L.marker(self.markList()[i].markPosition(), { title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
+        var x = L.marker(self.markList()[i].markPosition(), { icon: myIcon, title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
           .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
-          .addTo(markers);
+         .addTo(markers);            
+         x.on('click', onMarkClick);
+
     };
+
+    function onMarkClick(e){
+        console.dir(markers)
+        if (e.target.options.icon.options.iconUrl == myIcon.options.iconUrl){
+            e.target.setIcon(mySelectedIcon);
+        } else {
+            e.target.setIcon(myIcon);                
+        }
+    }
 
 
     var popup = L.popup();
