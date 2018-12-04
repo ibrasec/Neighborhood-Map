@@ -26,32 +26,6 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 }).addTo(mymap);
 
 
-// simulate getting Data from foursquare using a call function
-
-var getData = [
-{
-    name : 'restaurant allforno',
-    info: 'restaurant allfornopizza allfornopizza allfornopizza allforno',
-    image: 'alforno.png',
-    position: [51.50,-0.085]
-},{
-    name : 'restaurant tandori',
-    info: 'restaurant  tandoripizza tandoripizza tandori',
-    image: 'tandori.png',
-    position: [51.51,-0.0865]
-},{
-    name: 'restaurant  gamaj',
-    info: 'restaurant  gamajpizza gamajpizza gamaj',
-    image: 'gamaj.png',
-    position: [51.50,-0.0876]
-},{
-    name : 'restaurant  janzure',
-    info: 'restaurant  janzurepizza janzurepizza janzure',
-    image: 'janzure.png',
-    position: [51.51,-0.0888]
-}];
-
-
 
 
 // Setting the Original Data, or data before parsing Third party app
@@ -115,8 +89,8 @@ var ViewModel = function() {
         self.markList = ko.observableArray([]);
         for(i=0;i<result_length;i++){
                 itemname = result_items[i].venue.name
-                itemlatlng = [result_items[i].venue.location.lat,result_items[i].venue.location.lng]
-                thisdata = {name:itemname,position:itemlatlng}
+                itemlatlng = [result_items[i].venue.location.lat, result_items[i].venue.location.lng]
+                thisdata = {name:itemname, position:itemlatlng}
                 self.markList.push(new Mark(thisdata));
         };
         self.currentMark(self.markList)
@@ -138,6 +112,7 @@ var ViewModel = function() {
     };
 
     // Add Markers to the map
+
     for (i=0;i<self.markList().length;i++){
         var x = L.marker(self.markList()[i].markPosition(), { icon: myIcon, title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
           .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
