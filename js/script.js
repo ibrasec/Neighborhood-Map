@@ -33,42 +33,51 @@ var initialMarks = [
 {
     name : 'pizza allforno',
     info: 'pizza allfornopizza allfornopizza allfornopizza allforno',
+    icon: 'alforno.png',
     image: 'alforno.png',
     position: [51.50,-0.075]
 },{
     name : 'pizza JUMLA',
     info: 'pizza JUMLA',
+    icon: 'tandori.png',
     image: 'tandori.png',
     position: [51.51,-0.08]
 },{
     name : 'pizza tandori',
     info: 'pizza tandoripizza tandoripizza tandori',
+    icon: 'tandori.png',
     image: 'tandori.png',
     position: [51.50,-0.08]
 },{
     name: 'pizza gamaj',
     info: 'pizza gamajpizza gamajpizza gamaj',
+    icon: 'gamaj.png',
     image: 'gamaj.png',
     position: [51.50,-0.085]
 },{
     name : 'pizza janzure',
     info: 'pizza janzurepizza janzurepizza janzure',
+    icon: 'janzure.png',
     image: 'janzure.png',
     position: [51.50,-0.081]
 }];
+
+
 
 
 var Mark = function(data) {
     this.markInfo = ko.observable(data.info);
     this.markPosition = ko.observable(data.position);
     this.markName = ko.observable(data.name);  
-    this.markImage = ko.observable(data.image);  
+    this.markIcon = ko.observable(data.icon);
+    this.markImage = ko.observable(data.image);
 };
 
 
 var ViewModel = function() {
     var self = this
     //self.getData = getFoursquare();
+    this.imageError = 'error'
     this.markList = ko.observableArray([]);
     this.go = ko.observableArray([]);
     initialMarks.forEach(function(markItem) {
@@ -84,10 +93,20 @@ var ViewModel = function() {
         console.log('result',result)
         result_items = result.response.groups[0].items
         result_length =   result.response.groups[0].items.length      
-        console.log('inside filterThis',result_items, result_length)
         markers.clearLayers();
         self.markList = ko.observableArray([]);
         for(i=0;i<result_length;i++){
+                var itemImage = ''
+                console.log('vendie id',result_items[i].venue.id)
+                getPhoto(result_items[i].venue.id).done(function(image){
+                    prefix = image.response.photos.items[0].prefix
+                    suffix = image.response.photos.items[0].suffix
+                    itemImage = prefix + '300x100' + suffix
+                    self.imageError = ''
+                }).fail(function(){
+                   console.log('We coudlnt retrieve the image');
+                });
+                if (self.imageError == 'error'){ itemImage = './img/error-note.png'}
                 itemAddress = result_items[i].venue.location.address
                 itemCity = result_items[i].venue.location.city
                 itemState = result_items[i].venue.location.state
@@ -97,16 +116,17 @@ var ViewModel = function() {
                 itemlatlng = [result_items[i].venue.location.lat, result_items[i].venue.location.lng]
                 // Gathering item info
                 itemInfo = itemAddress + ',' + itemCity + ',' + itemState +  ',' + itemCountry
-                thisdata = {name:itemname, position:itemlatlng, info:itemInfo, image:itemIcon}
+                thisdata = {name:itemname, position:itemlatlng, info:itemInfo, icon:itemIcon, image:itemImage}
                 self.markList.push(new Mark(thisdata));
         };
         self.currentMark(self.markList)
         for (i=0;i<self.markList().length;i++){
-            popupText = "<b>Icon:</b> <img src="+self.markList()[i].markImage()+"><br>" +
+            popupText = "<img src="+self.markList()[i].markImage()+"><br>" +
+                        "<b>Icon:</b> <img src="+self.markList()[i].markIcon()+"><br>" +
                         "<b>Name:</b>" + self.markList()[i].markName() +"<br>" +
                         "<b>Address:</b>" + self.markList()[i].markInfo()
 
-            x = L.marker(self.markList()[i].markPosition(), {   icon: myIcon, title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
+            x = L.marker(self.markList()[i].markPosition(), {   icon: myIcon, title: self.markList()[i].markName(), riseOnHover: 'true'}).addTo(mymap)
               .bindPopup(popupText).openPopup()
               .addTo(markers);
               x.on('click', onMarkClick);
@@ -114,7 +134,6 @@ var ViewModel = function() {
         }).fail(function() {
             alert("Sorry... We are unable to fetch the data due to connectivty issue")
         });
-        console.log('selfmarklist',this.markList()[0].markName());
     };
 
     this.showThis = function(clicked) {
@@ -128,12 +147,13 @@ var ViewModel = function() {
             popupText = "<b>Icon:</b> <img src="+self.markList()[i].markImage()+"><br>" +
                         "<b>Name:</b>" + self.markList()[i].markName() +"<br>" +
                         "<b>Address:</b>" + self.markList()[i].markInfo()
-        var x = L.marker(self.markList()[i].markPosition(), { icon: myIcon, title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
+        var x = L.marker(self.markList()[i].markPosition(), { icon: myIcon, title: self.markList()[i].markName(), riseOnHover: 'true' }).addTo(mymap)
           .bindPopup(popupText).openPopup()
          .addTo(markers);            
          x.on('click', onMarkClick);
 
     };
+
     function onMarkClick(e){
         // To check if there are any previously clicked Mark to Unmark it
         if ( (oldClicked != '') && (oldClicked.latlng !== e.latlng) ) {
@@ -150,6 +170,11 @@ var ViewModel = function() {
         }
 
     }
+
+    $('.list-group-item').on('click', function(e) {
+       // Use the event to find the clicked element
+       console.log(e)
+    });
 
 
     var popup = L.popup();
