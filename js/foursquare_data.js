@@ -6,7 +6,7 @@ function ajax(){
     return $.ajax({
         type: "GET",
         dataType: 'json',
-	    url:"https://api.foursquare.com/v2/venues/explore?client_id="+clientId+"&radius=1000&client_secret="+clientSecret + "&v=20180323&ll=51.49608,-0.0687&query="+searchFor})
+	    url:"https://api.foursquare.com/v2/venues/explore?client_id="+clientId+"&radius=1000&client_secret="+clientSecret + "&v=20180323&ll=51.503026, -0.091159&query="+searchFor})
 }
 
 function getPhoto(venuesId){
