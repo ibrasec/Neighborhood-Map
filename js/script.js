@@ -33,60 +33,40 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 // Setting the Original Data, or data before parsing Third party app
 var initialMarks = [
 {
-    name : 'pizza allforno',
-    info: 'pizza allfornopizza allfornopizza allfornopizza allforno',
-    icon: 'alforno.png',
-    image: 'alforno.png',
-    position: [51.50,-0.075]
+    name : 'Kaplan Law School',
+    info: 'Palace House, 3 Cathedral St, London SE1 9DE, UK',
+    icon: './img/school_64.png',
+    image: './img/kaplan.png',
+    position: [51.506535, -0.090685]
 },{
-    name : 'pizza JUMLA',
-    info: 'pizza JUMLA',
-    icon: 'tandori.png',
-    image: 'tandori.png',
-    position: [51.51,-0.08]
+    name : 'Charles Dickens Primary Scool',
+    info: 'Toulmin St, London SE1 1AF, UK',
+    icon: './img/school_64.png',
+    image: './img/charles_school.jpeg',
+    position: [51.501139, -0.09634]
 },{
-    name : 'pizza tandori',
-    info: 'pizza tandoripizza tandoripizza tandori',
-    icon: 'tandori.png',
-    image: 'tandori.png',
-    position: [51.50,-0.08]
+    name : 'Snowsfields Primary School',
+    info: 'Kirby Grove, London SE1 3TD, UK',
+    icon: './img/school_64.png',
+    image: './img/snowfield_school.jpeg',
+    position: [51.501752, -0.083948]
 },{
-    name: 'pizza gamaj',
-    info: 'pizza gamajpizza gamajpizza gamaj',
-    icon: 'gamaj.png',
-    image: 'gamaj.png',
-    position: [51.50,-0.085]
+    name: 'Bell London',
+    info: '1-2 Bear Gardens, London SE1 9ED, UK',
+    icon: './img/school_64.png',
+    image: './img/bell_school.jpeg',
+    position: [51.507627, -0.095675]
 },{
-    name : 'pizza janzure',
-    info: 'pizza janzurepizza janzurepizza janzure',
-    icon: 'janzure.png',
-    image: 'janzure.png',
-    position: [51.50,-0.081]
+    name : 'Flying Fantastic',
+    info: '229 Union St, London SE1 0LR, UK',
+    icon: '../img/school_64.png',
+    image: './img/flying_fantastic.jpeg',
+    position: [51.503554, -0.101797]
 }];
 
 
 
 
-// Use the event to find the clicked element
-$('.list-group').on('click', function(e) {
-    markers[e.target.textContent].openPopup()
-    console.log(oldItemClicked._latlng, markers[e.target.textContent]._latlng )
-    if ( (oldItemClicked != '') && (oldItemClicked._latlng !== markers[e.target.textContent]._latlng) ) {
-        console.log('old is different => Set myicon')
-        oldItemClicked.setIcon(myIcon);
-    }
-    if ( markers[e.target.textContent].options.icon.options.iconUrl == myIcon.options.iconUrl){
-        console.log('new icon is clicked => set myseleceted icon')
-        markers[e.target.textContent].setIcon(mySelectedIcon);
-        if (oldClicked !=''){oldClicked.target.setIcon(myIcon);}
-        oldItemClicked = markers[e.target.textContent]
-    } 
-    // To un-color the Mark if it was selected before
-    else {
-        console.log('else => set myicon')
-        markers[e.target.textContent].setIcon(myIcon);               
-    }
-});
 
       
 
@@ -122,44 +102,33 @@ var ViewModel = function() {
         markers_layer.clearLayers();
         self.markList = ko.observableArray([]);
         for(i=0;i<result_length;i++){
-                var itemImage = ''
-                // retrieve item image using ajax
-                getPhoto(result_items[i].venue.id).done(function(image){
-                    prefix = image.response.photos.items[0].prefix
-                    suffix = image.response.photos.items[0].suffix
-                    itemImage = prefix + '300x100' + suffix
-                    self.imageError = ''
-                }).fail(function(){
-                   console.log('We coudlnt retrieve the image');
-                });
-                // Assign an Error image if we couldn't retrive an image
-                if (self.imageError == 'error'){ itemImage = './img/error-note.png'}
-                itemAddress = result_items[i].venue.location.address
-                itemCity = result_items[i].venue.location.city
-                itemState = result_items[i].venue.location.state
-                itemCountry = result_items[i].venue.location.country
-                itemIcon = result_items[i].venue.categories[0].icon.prefix + '64' + result_items[i].venue.categories[0].icon.suffix
-                itemname = result_items[i].venue.name
-                itemlatlng = [result_items[i].venue.location.lat, result_items[i].venue.location.lng]
-                itemId = result_items[i].venue.id
-                // Gathering item info
-                itemInfo = itemAddress + ',' + itemCity + ',' + itemState +  ',' + itemCountry
-                thisdata = {name:itemname, position:itemlatlng, info:itemInfo, icon:itemIcon, image:itemImage, id:itemId}
-                self.markList.push(new Mark(thisdata));
+            var itemImage = ''
+            // retrieve item image using ajax
+            getPhoto(result_items[i].venue.id).done(function(image){
+                prefix = image.response.photos.items[0].prefix
+                suffix = image.response.photos.items[0].suffix
+                itemImage = prefix + '300x100' + suffix
+                self.imageError = ''
+            }).fail(function(){
+                console.log('We coudlnt retrieve the image');
+            });
+            // Assign an Error image if we couldn't retrive an image
+            if (self.imageError == 'error'){ itemImage = './img/error-note.png'}
+            itemAddress = result_items[i].venue.location.address
+            itemCity = result_items[i].venue.location.city
+            itemState = result_items[i].venue.location.state
+            itemCountry = result_items[i].venue.location.country
+            itemIcon = result_items[i].venue.categories[0].icon.prefix + '64' + result_items[i].venue.categories[0].icon.suffix
+            itemname = result_items[i].venue.name
+            itemlatlng = [result_items[i].venue.location.lat, result_items[i].venue.location.lng]
+            itemId = result_items[i].venue.id
+            // Gathering item info
+            itemInfo = itemAddress + ',' + itemCity + ',' + itemState +  ',' + itemCountry
+            thisdata = {name:itemname, position:itemlatlng, info:itemInfo, icon:itemIcon, image:itemImage, id:itemId}
+            self.markList.push(new Mark(thisdata));
         };
         self.currentMark(self.markList)
-        for (i=0;i<self.markList().length;i++){
-            popupText = "<img src="+self.markList()[i].markImage()+"><br>" +
-                        "<b>Icon:</b> <img src="+self.markList()[i].markIcon()+"><br>" +
-                        "<b>Name:</b>" + self.markList()[i].markName() +"<br>" +
-                        "<b>Address:</b>" + self.markList()[i].markInfo()
-
-            x = L.marker(self.markList()[i].markPosition(), {   icon: myIcon, title: self.markList()[i].markName(), riseOnHover: 'true'}).addTo(mymap)
-              .bindPopup(popupText).openPopup()
-              .addTo(markers_layer);
-              x.on('click', onMarkClick);
-            markers[self.markList()[i].markName()]=x
-        };
+        updateMarkers()
         }).fail(function() {
             alert("Sorry... We are unable to fetch the data due to connectivty issue")
         });
@@ -167,17 +136,21 @@ var ViewModel = function() {
 
 
     // Add markers_layer to the map
-
-    for (i=0;i<self.markList().length;i++){
-            popupText = "<b>Icon:</b> <img src="+self.markList()[i].markImage()+"><br>" +
+    function updateMarkers(){
+        for (i=0;i<self.markList().length;i++){
+            popupText = "<img src="+self.markList()[i].markImage()+"><br>" +
+                        "<b>Icon:</b> <img src="+self.markList()[i].markIcon()+"><br>" +
                         "<b>Name:</b>" + self.markList()[i].markName() +"<br>" +
                         "<b>Address:</b>" + self.markList()[i].markInfo()
-        var x = L.marker(self.markList()[i].markPosition(), { icon: myIcon, title: self.markList()[i].markName(), riseOnHover: 'true' }).addTo(mymap)
-          .bindPopup(popupText).openPopup()
-         .addTo(markers_layer);            
-         x.on('click', onMarkClick);
+            var x = L.marker(self.markList()[i].markPosition(), { icon: myIcon, title: self.markList()[i].markName(), riseOnHover: 'true'}).addTo(mymap)
+                .bindPopup(popupText).openPopup()
+                .addTo(markers_layer);            
+            x.on('click', onMarkClick);
+            markers[self.markList()[i].markName()]=x
+        };
+    }
 
-    };
+    updateMarkers()
 
     function onMarkClick(e){
         // To check if there are any previously clicked Mark to Unmark it
@@ -195,6 +168,27 @@ var ViewModel = function() {
             e.target.setIcon(myIcon);                
         }
     }
+
+    // Use the event to find the clicked element
+    $('.list-group').on('click', function(e) {
+        markers[e.target.textContent].openPopup()
+        console.log(oldItemClicked._latlng, markers[e.target.textContent]._latlng )
+        if ( (oldItemClicked != '') && (oldItemClicked._latlng !== markers[e.target.textContent]._latlng) ) {
+            console.log('old is different => Set myicon')
+            oldItemClicked.setIcon(myIcon);
+        }
+        if ( markers[e.target.textContent].options.icon.options.iconUrl == myIcon.options.iconUrl){
+            console.log('new icon is clicked => set myseleceted icon')
+            markers[e.target.textContent].setIcon(mySelectedIcon);
+            if (oldClicked !=''){oldClicked.target.setIcon(myIcon);}
+            oldItemClicked = markers[e.target.textContent]
+        } 
+        // To un-color the Mark if it was selected before
+        else {
+            console.log('else => set myicon')
+            markers[e.target.textContent].setIcon(myIcon);               
+        }
+    });
 
 
     var popup = L.popup();
