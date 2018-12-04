@@ -1,7 +1,7 @@
 var mymap = L.map('mapid').setView([51.505, -0.09], 15);
 // creating markers variable For bulk update of all markers at once
 var markers = new L.LayerGroup().addTo(mymap);
-
+var oldClicked = ''
 var myIcon = L.icon({
     iconUrl: './img/marker-icon.png',
     iconSize:     [25, 41], // size of the icon
@@ -59,10 +59,10 @@ var initialMarks = [
 
 
 var Mark = function(data) {
-    //this.markInfo = ko.observable(data.info);
+    this.markInfo = ko.observable(data.info);
     this.markPosition = ko.observable(data.position);
     this.markName = ko.observable(data.name);  
-    //this.markImage = ko.observable(data.image);  
+    this.markImage = ko.observable(data.image);  
 };
 
 
@@ -88,15 +88,26 @@ var ViewModel = function() {
         markers.clearLayers();
         self.markList = ko.observableArray([]);
         for(i=0;i<result_length;i++){
+                itemAddress = result_items[i].venue.location.address
+                itemCity = result_items[i].venue.location.city
+                itemState = result_items[i].venue.location.state
+                itemCountry = result_items[i].venue.location.country
+                itemIcon = result_items[i].venue.categories[0].icon.prefix + '64' + result_items[i].venue.categories[0].icon.suffix
                 itemname = result_items[i].venue.name
                 itemlatlng = [result_items[i].venue.location.lat, result_items[i].venue.location.lng]
-                thisdata = {name:itemname, position:itemlatlng}
+                // Gathering item info
+                itemInfo = itemAddress + ',' + itemCity + ',' + itemState +  ',' + itemCountry
+                thisdata = {name:itemname, position:itemlatlng, info:itemInfo, image:itemIcon}
                 self.markList.push(new Mark(thisdata));
         };
         self.currentMark(self.markList)
         for (i=0;i<self.markList().length;i++){
+            popupText = "<b>Icon:</b> <img src="+self.markList()[i].markImage()+"><br>" +
+                        "<b>Name:</b>" + self.markList()[i].markName() +"<br>" +
+                        "<b>Address:</b>" + self.markList()[i].markInfo()
+
             x = L.marker(self.markList()[i].markPosition(), {   icon: myIcon, title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
-              .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
+              .bindPopup(popupText).openPopup()
               .addTo(markers);
               x.on('click', onMarkClick);
         };
@@ -114,20 +125,30 @@ var ViewModel = function() {
     // Add Markers to the map
 
     for (i=0;i<self.markList().length;i++){
+            popupText = "<b>Icon:</b> <img src="+self.markList()[i].markImage()+"><br>" +
+                        "<b>Name:</b>" + self.markList()[i].markName() +"<br>" +
+                        "<b>Address:</b>" + self.markList()[i].markInfo()
         var x = L.marker(self.markList()[i].markPosition(), { icon: myIcon, title: 'look at me!', riseOnHover: 'true'}).addTo(mymap)
-          .bindPopup("<b>Hello world!</b><br />I am a "+self.markList()[i].markName()).openPopup()
+          .bindPopup(popupText).openPopup()
          .addTo(markers);            
          x.on('click', onMarkClick);
 
     };
-
     function onMarkClick(e){
-        console.dir(markers)
-        if (e.target.options.icon.options.iconUrl == myIcon.options.iconUrl){
+        // To check if there are any previously clicked Mark to Unmark it
+        if ( (oldClicked != '') && (oldClicked.latlng !== e.latlng) ) {
+            oldClicked.target.setIcon(myIcon);
+        }        
+        // To Color the Mark if it hasn't been selected
+        if ( e.target.options.icon.options.iconUrl == myIcon.options.iconUrl){
             e.target.setIcon(mySelectedIcon);
-        } else {
+            oldClicked = e
+        } 
+        // To un-color the Mark if it was selected before
+        else {
             e.target.setIcon(myIcon);                
         }
+
     }
 
 
