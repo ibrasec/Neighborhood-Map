@@ -1,7 +1,9 @@
 var mymap = L.map('mapid').setView([51.505, -0.09], 15);
-// creating markers variable For bulk update of all markers at once
-var markers = new L.LayerGroup().addTo(mymap);
+// creating markers_layer variable For bulk update of all markers_layer at once
+var markers_layer = new L.LayerGroup().addTo(mymap);
+var markers = {}
 var oldClicked = ''
+var oldItemClicked = ''
 var myIcon = L.icon({
     iconUrl: './img/marker-icon.png',
     iconSize:     [25, 41], // size of the icon
@@ -65,12 +67,36 @@ var initialMarks = [
 
 
 
+// Use the event to find the clicked element
+$('.list-group').on('click', function(e) {
+    markers[e.target.textContent].openPopup()
+    console.log(oldItemClicked._latlng, markers[e.target.textContent]._latlng )
+    if ( (oldItemClicked != '') && (oldItemClicked._latlng !== markers[e.target.textContent]._latlng) ) {
+        console.log('old is different => Set myicon')
+        oldItemClicked.setIcon(myIcon);
+    }
+    if ( markers[e.target.textContent].options.icon.options.iconUrl == myIcon.options.iconUrl){
+        console.log('new icon is clicked => set myseleceted icon')
+        markers[e.target.textContent].setIcon(mySelectedIcon);
+        if (oldClicked !=''){oldClicked.target.setIcon(myIcon);}
+        oldItemClicked = markers[e.target.textContent]
+    } 
+    // To un-color the Mark if it was selected before
+    else {
+        console.log('else => set myicon')
+        markers[e.target.textContent].setIcon(myIcon);               
+    }
+});
+
+      
+
 var Mark = function(data) {
     this.markInfo = ko.observable(data.info);
     this.markPosition = ko.observable(data.position);
     this.markName = ko.observable(data.name);  
     this.markIcon = ko.observable(data.icon);
     this.markImage = ko.observable(data.image);
+    this.markId = ko.observable(data.id);
 };
 
 
@@ -93,11 +119,11 @@ var ViewModel = function() {
         console.log('result',result)
         result_items = result.response.groups[0].items
         result_length =   result.response.groups[0].items.length      
-        markers.clearLayers();
+        markers_layer.clearLayers();
         self.markList = ko.observableArray([]);
         for(i=0;i<result_length;i++){
                 var itemImage = ''
-                console.log('vendie id',result_items[i].venue.id)
+                // retrieve item image using ajax
                 getPhoto(result_items[i].venue.id).done(function(image){
                     prefix = image.response.photos.items[0].prefix
                     suffix = image.response.photos.items[0].suffix
@@ -106,6 +132,7 @@ var ViewModel = function() {
                 }).fail(function(){
                    console.log('We coudlnt retrieve the image');
                 });
+                // Assign an Error image if we couldn't retrive an image
                 if (self.imageError == 'error'){ itemImage = './img/error-note.png'}
                 itemAddress = result_items[i].venue.location.address
                 itemCity = result_items[i].venue.location.city
@@ -114,9 +141,10 @@ var ViewModel = function() {
                 itemIcon = result_items[i].venue.categories[0].icon.prefix + '64' + result_items[i].venue.categories[0].icon.suffix
                 itemname = result_items[i].venue.name
                 itemlatlng = [result_items[i].venue.location.lat, result_items[i].venue.location.lng]
+                itemId = result_items[i].venue.id
                 // Gathering item info
                 itemInfo = itemAddress + ',' + itemCity + ',' + itemState +  ',' + itemCountry
-                thisdata = {name:itemname, position:itemlatlng, info:itemInfo, icon:itemIcon, image:itemImage}
+                thisdata = {name:itemname, position:itemlatlng, info:itemInfo, icon:itemIcon, image:itemImage, id:itemId}
                 self.markList.push(new Mark(thisdata));
         };
         self.currentMark(self.markList)
@@ -128,20 +156,17 @@ var ViewModel = function() {
 
             x = L.marker(self.markList()[i].markPosition(), {   icon: myIcon, title: self.markList()[i].markName(), riseOnHover: 'true'}).addTo(mymap)
               .bindPopup(popupText).openPopup()
-              .addTo(markers);
+              .addTo(markers_layer);
               x.on('click', onMarkClick);
+            markers[self.markList()[i].markName()]=x
         };
         }).fail(function() {
             alert("Sorry... We are unable to fetch the data due to connectivty issue")
         });
     };
 
-    this.showThis = function(clicked) {
-        console.log('Something has been clicked',clicked)
-        console.log(self.currentMark(clicked))
-    };
 
-    // Add Markers to the map
+    // Add markers_layer to the map
 
     for (i=0;i<self.markList().length;i++){
             popupText = "<b>Icon:</b> <img src="+self.markList()[i].markImage()+"><br>" +
@@ -149,7 +174,7 @@ var ViewModel = function() {
                         "<b>Address:</b>" + self.markList()[i].markInfo()
         var x = L.marker(self.markList()[i].markPosition(), { icon: myIcon, title: self.markList()[i].markName(), riseOnHover: 'true' }).addTo(mymap)
           .bindPopup(popupText).openPopup()
-         .addTo(markers);            
+         .addTo(markers_layer);            
          x.on('click', onMarkClick);
 
     };
@@ -162,19 +187,14 @@ var ViewModel = function() {
         // To Color the Mark if it hasn't been selected
         if ( e.target.options.icon.options.iconUrl == myIcon.options.iconUrl){
             e.target.setIcon(mySelectedIcon);
+            oldItemClicked.setIcon(myIcon);  
             oldClicked = e
         } 
         // To un-color the Mark if it was selected before
         else {
             e.target.setIcon(myIcon);                
         }
-
     }
-
-    $('.list-group-item').on('click', function(e) {
-       // Use the event to find the clicked element
-       console.log(e)
-    });
 
 
     var popup = L.popup();
