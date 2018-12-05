@@ -91,12 +91,11 @@ var ViewModel = function () {
     this.filterThis = function (clicked) {
         // calling ajax data when the retrieved successfully
         ajax().done(function (result) {
-            console.log('result',result)
             result_items = result.response.groups[0].items;
             result_length = result.response.groups[0].items.length;
             markers_layer.clearLayers();
             self.markList = ko.observableArray([]);
-            for (i = 0; i < result_length; i++) {
+            for (i = 0; i < result_length; i = i + 1) {
                 var itemImage = '';
                 // retrieve item image using ajax
                 getPhoto(result_items[i].venue.id).done(function (image) {
@@ -132,11 +131,11 @@ var ViewModel = function () {
 
     // Add markers_layer to the map
     function updateMarkers() {
-        for (j = 0; j < self.markList().length; j++) {
+        for (j = 0; j < self.markList().length; j = j + 1) {
             popupText = "<img src=" + self.markList()[j].markImage() + "><br>" +
-                        "<b>Icon:</b> <img src=" + self.markList()[j].markIcon() + "><br>" +
-                        "<b>Name:</b>" + self.markList()[j].markName() +"<br>" +
-                        "<b>Address:</b>" + self.markList()[j].markInfo()
+                        "<b>Icon: </b> <img src=" + self.markList()[j].markIcon() + "><br>" +
+                        "<b>Name: </b>" + self.markList()[j].markName() +"<br>" +
+                        "<b>Address: </b>" + self.markList()[j].markInfo()
             var x = L.marker(self.markList()[j].markPosition(), { icon: myIcon, title: self.markList()[j].markName(), riseOnHover: 'true'}).addTo(mymap)
                 .bindPopup(popupText).openPopup()
                 .addTo(markers_layer);
@@ -155,7 +154,7 @@ var ViewModel = function () {
         // To Color the Mark if it hasn't been selected
         if ( e.target.options.icon.options.iconUrl == myIcon.options.iconUrl) {
             e.target.setIcon(mySelectedIcon);
-            oldItemClicked.setIcon(myIcon);  
+            if (oldItemClicked !='') {oldItemClicked.setIcon(myIcon); }
             oldClicked = e
         } 
         // To un-color the Mark if it was selected before
@@ -167,20 +166,16 @@ var ViewModel = function () {
     // Use the event to find the clicked element
     $('.list-group').on('click', function(e) {
         markers[e.target.textContent].openPopup()
-        console.log(oldItemClicked._latlng, markers[e.target.textContent]._latlng )
         if ( (oldItemClicked != '') && (oldItemClicked._latlng !== markers[e.target.textContent]._latlng) ) {
-            console.log('old is different => Set myicon')
             oldItemClicked.setIcon(myIcon);
         }
         if ( markers[e.target.textContent].options.icon.options.iconUrl == myIcon.options.iconUrl) {
-            console.log('new icon is clicked => set myseleceted icon')
             markers[e.target.textContent].setIcon(mySelectedIcon);
             if (oldClicked !='') {oldClicked.target.setIcon(myIcon);}
             oldItemClicked = markers[e.target.textContent]
         } 
         // To un-color the Mark if it was selected before
         else {
-            console.log('else => set myicon')
             markers[e.target.textContent].setIcon(myIcon);
         }
     });
