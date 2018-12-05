@@ -11,6 +11,9 @@ var myIcon = L.icon({
     popupAnchor: [-1, -38] // point from which the popup should open relative to the iconAnchor
 });
 
+var mydivIcon = L.divIcon({className: 'my-div-icon bounce', iconSize:[25, 41],iconAnchor: [12.5, 41], html:"<img src='./img/marker-icon-selected.png'>"});
+L.marker([51.505, -0.09], {icon: mydivIcon}).addTo(mymap);
+
 
 var mySelectedIcon = L.icon({
     iconUrl: './img/marker-icon-selected.png',
@@ -153,7 +156,7 @@ var ViewModel = function () {
         }        
         // To Color the Mark if it hasn't been selected
         if ( e.target.options.icon.options.iconUrl == myIcon.options.iconUrl) {
-            e.target.setIcon(mySelectedIcon);
+            e.target.setIcon(mydivIcon);
             if (oldItemClicked !='') {oldItemClicked.setIcon(myIcon); }
             oldClicked = e
         } 
@@ -170,7 +173,7 @@ var ViewModel = function () {
             oldItemClicked.setIcon(myIcon);
         }
         if ( markers[e.target.textContent].options.icon.options.iconUrl == myIcon.options.iconUrl) {
-            markers[e.target.textContent].setIcon(mySelectedIcon);
+            markers[e.target.textContent].setIcon(mydivIcon);
             if (oldClicked !='') {oldClicked.target.setIcon(myIcon);}
             oldItemClicked = markers[e.target.textContent]
         } 
