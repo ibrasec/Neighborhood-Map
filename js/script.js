@@ -14,8 +14,8 @@ var myIcon = L.icon({
 
 var mySelectedIcon = L.icon({
     iconUrl: './img/marker-icon-selected.png',
-    iconSize: [25, 41], // size of the icon
-    iconAnchor: [12.5, 41], // point of the icon which will correspond to marker's location
+    iconSize: [35, 50], // size of the icon
+    iconAnchor: [17.5, 50], // point of the icon which will correspond to marker's location
     popupAnchor: [-1, -38] // point from which the popup should open relative to the iconAnchor
 });
 
@@ -104,7 +104,7 @@ var ViewModel = function () {
                     itemImage = prefix + '300x100' + suffix;
                     self.imageError = '';
                 }).fail(function () {
-                    console.log('We coudlnt retrieve the image');
+                    console.log('We couldnt retrieve the image');
                 });
                 // Assign an Error image if we couldn't retrive an image
                 if (self.imageError === 'error') { itemImage = './img/error-note.png'; }
@@ -124,7 +124,7 @@ var ViewModel = function () {
             self.currentMark(self.markList)
             updateMarkers()
         }).fail(function () {
-            alert("Sorry... We are unable to fetch the data due to connectivty issue")
+            alert("Sorry... We are unable to fetch the data due to connectivty issue with foursquare api")
         });
     };
 
