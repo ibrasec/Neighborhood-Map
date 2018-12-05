@@ -2,7 +2,7 @@ body {
     padding: 0;
     margin: 0;
 }
-html, body, #map {
+html, body, #mapid {
     height: 100%;
     width: 100vw;
 }
@@ -16,6 +16,15 @@ html, body, #map {
   transition: all 1s 
 }
 
-.list-group-item {
-    
+
+.form-control{
+    min-width: 50%;
+}
+
+
+.list-group{
+    max-height: 100%;
+    margin-bottom: 10px;
+    overflow:scroll;
+    -webkit-overflow-scrolling: touch;
 }
