@@ -12,7 +12,7 @@ var myIcon = L.icon({
 });
 
 var mydivIcon = L.divIcon({className: 'my-div-icon bounce', iconSize:[25, 41],iconAnchor: [12.5, 41], html:"<img src='./img/marker-icon-selected.png'>"});
-L.marker([51.505, -0.09], {icon: mydivIcon}).addTo(mymap);
+
 
 
 var mySelectedIcon = L.icon({
